@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 
+/* 달력의 공백일 채우기 */
 export const fillEmptyColumns = (columns, start, end) => {
   const filledColumns = columns.slice(0);
 
@@ -26,6 +27,7 @@ export const fillEmptyColumns = (columns, start, end) => {
   return filledColumns;
 };
 
+/* 달력의 일 가져오기 */
 export const getCalendarColumns = (now) => {
   const start = dayjs(now).startOf("month"); // 달의 첫날
   const end = dayjs(now).endOf("month"); // 달의 마지막날
@@ -42,3 +44,31 @@ export const getCalendarColumns = (now) => {
   const filledColumns = fillEmptyColumns(columns, start, end);
   return filledColumns;
 };
+
+
+/* 달력의 헤더 - 요일 가져오기 */
+/**
+ * @param day 0 ~ 6
+ * @return 일 ~ 월
+ */
+const dayTexts = ['일', '월', '화', '수', '목', '금', '토']
+export const getDayText = (day) => {
+  /* Ex 1 */
+  return dayTexts[day];
+
+  /* Ex 2 */
+  // switch (day) {
+  //   case 0: return '일';
+  //   case 1: return '월';
+  //   case 2: return '화';
+  //   case 3: return '수';
+  //   case 4: return '목';
+  //   case 5: return '금';
+  //   case 6: return '토';
+  //   default: return '';
+  // }
+}
+
+export const getDayColor = (day) => {
+  return day === 0 ? "#e67639" : day === 6 ? "#5872d1" : "#2b2b2b";
+}
