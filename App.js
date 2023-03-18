@@ -27,6 +27,7 @@ export default function App() {
   } = useCalendar(now);
 
   const {
+    todoList,
     filteredTodoList, // 필터된 todoList 사용해야함
     input,
     setInput,
@@ -49,13 +50,14 @@ export default function App() {
   const ListHeaderComponent = () => (
     <View>
       <Calendar 
-      columns={columns}
-      selectedDate={selectedDate}
-      onPressLeftArrow={onPressLeftArrow}
-      onPressHeaderDate={onPressHeaderDate}
-      onPressRightArrow={onPressRightArrow}
-      onPressDate={onPressDate}
-    />
+        todoList={todoList}
+        columns={columns}
+        selectedDate={selectedDate}
+        onPressLeftArrow={onPressLeftArrow}
+        onPressHeaderDate={onPressHeaderDate}
+        onPressRightArrow={onPressRightArrow}
+        onPressDate={onPressDate}
+      />
     <View
       style={{
         width: 4,
