@@ -1,27 +1,38 @@
 import dayjs from 'dayjs';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Margin from './src/Margin';
 import { runPracticeDayjs } from './src/practive-dayjs';
 import { getCalendarColumns, getDayText, getDayColor } from './src/util';
+import { SimpleLineIcons } from '@expo/vector-icons'; 
 
 const columnSize = 35;
 
-const Column = ({text, color, opacity}) => {
+const Column = ({text, color, opacity, disabled, onPress}) => {
   return(
-    <View style={{ 
-      width: columnSize, 
-      height: columnSize, 
-      justifyContent: 'center', 
-      alignItems: 'center'
+    <TouchableOpacity 
+      disabled={disabled} // 요일은 터치되면 안되니까
+      onPress={onPress}
+      style={{ 
+        width: columnSize, 
+        height: columnSize, 
+        justifyContent: 'center', 
+        alignItems: 'center'
       }}
     >
       <Text style={{ color, opacity }}>{text}</Text>
-    </View>
+    </TouchableOpacity>
   )
 }
 
+const ArrowButton = ({onPress, iconName}) => {
+  return(
+    <TouchableOpacity onPress={ onPress } style={{paddingHorizontal: 20, paddingVertical: 15}}>
+      <SimpleLineIcons name={ iconName } size={15} color='#404040' />
+    </TouchableOpacity>
+  )
+}
 
 export default function App() {
   const now = dayjs(); // 현재시각
@@ -32,13 +43,16 @@ export default function App() {
 
     return (
       <View>
-        <Margin height={15}/>
-
         {/* YYYY.MM.DD */}
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={{ fontSize: 20, color: '#404040' }}>{currentDateText}</Text>
+          <ArrowButton iconName='arrow-left' onPress={() => {}} />
+
+          <TouchableOpacity>
+            <Text style={{ fontSize: 20, color: '#404040' }}>{currentDateText}</Text>
+          </TouchableOpacity>
+
+          <ArrowButton iconName='arrow-right' onPress={() => {}} />
         </View>
-        <Margin height={15}/>
         
         {/* 요일 */}
         <View style={{ flexDirection: 'row'}}>
@@ -46,7 +60,13 @@ export default function App() {
             const dayText = getDayText(day);
             const color = getDayColor(day);
             return (
-              <Column text={dayText} color={color} opacity={1}/>
+              <Column 
+                key={`day${day}`} 
+                text={dayText} 
+                color={color} 
+                opacity={1}
+                disabled={true}
+              />
             )
           })}
         </View>
@@ -75,6 +95,7 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <FlatList 
         data={columns} // data: 만들고자 하는 리스트의 source를 담는 prop
+        keyExtractor={(_, index) => `column-${index}`}
         numColumns='7' // 한줄에 몇개
         renderItem={renderItem} // renderItem: data로 받은 소스들 각각의 item들을 render 시켜주는 콜백함수
         ListHeaderComponent={ListHeaderComponent}
