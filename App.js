@@ -7,6 +7,7 @@ import { runPracticeDayjs } from './src/practive-dayjs';
 import { getCalendarColumns, getDayText, getDayColor } from './src/util';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useCalendar } from './src/hook/use-calendar';
 
 const columnSize = 35;
 
@@ -39,33 +40,21 @@ const ArrowButton = ({onPress, iconName}) => {
 
 export default function App() {
   const now = dayjs(); // 현재시각
-  const [selectedDate, setSelectedDate] = useState(now);
+  const { 
+    selectedDate,
+    setSelectedDate,
+    isDatePickerVisible,
+    showDatePicker,
+    hideDatePicker,
+    handleConfirm,
+    subtract1Month,
+    add1Month,
+  } = useCalendar(now);
   
   const columns = getCalendarColumns(selectedDate); // 현재시각을 기준으로 캘린더에 담긴 컬럼들을 가져옴
 
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleConfirm = (date) => {
-    setSelectedDate(dayjs(date)); // 밖에서 클릭했을 때랑 마찬가지로 모달에서도 클릭한 날짜가 선택되게
-    hideDatePicker();
-  };
-
-  const onPressLeftArrow = () => {
-    const newSelectedDate = dayjs(selectedDate).subtract(1, 'month');
-    setSelectedDate(newSelectedDate)
-  }
-  const onPressRightArrow = () => {
-    const newSelectedDate = dayjs(selectedDate).add(1, 'month');
-    setSelectedDate(newSelectedDate)
-  }
+  const onPressLeftArrow = subtract1Month
+  const onPressRightArrow = add1Month
 
   const ListHeaderComponent = () => {
     const currentDateText = dayjs(selectedDate).format('YYYY.MM.DD.');
@@ -130,9 +119,9 @@ export default function App() {
     // console.log('columns', columns);
   }, [])
 
-  useEffect(() => {
-    console.log('selectedDate값 변경:', dayjs(selectedDate). format('YYYY.MM.DD'));
-  }, [selectedDate])
+  // useEffect(() => {
+  //   console.log('selectedDate값 변경:', dayjs(selectedDate). format('YYYY.MM.DD'));
+  // }, [selectedDate])
 
   return (
     <SafeAreaView style={styles.container}>
