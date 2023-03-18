@@ -1,14 +1,18 @@
+import { useEffect, useState } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import dayjs from 'dayjs';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper'
+import { SimpleLineIcons } from '@expo/vector-icons';
+
 import Margin from './src/Margin';
 import { runPracticeDayjs } from './src/practive-dayjs';
 import { getCalendarColumns, getDayText, getDayColor } from './src/util';
-import { SimpleLineIcons } from '@expo/vector-icons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useCalendar } from './src/hook/use-calendar';
 import { useTodoList } from './src/hook/use-todo-list';
+
+const statusBarHeight = getStatusBarHeight(true);
 
 const columnSize = 35;
 
@@ -127,9 +131,20 @@ export default function App() {
   // }, [selectedDate])
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <Image
+        source={{
+          uri: "https://img.freepik.com/free-photo/white-crumpled-paper-texture-for-background_1373-159.jpg?w=1060&t=st=1667524235~exp=1667524835~hmac=8a3d988d6c33a32017e280768e1aa4037b1ec8078c98fe21f0ea2ef361aebf2c",
+        }}
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+        }}
+      />
       <FlatList 
         data={columns} // data: 만들고자 하는 리스트의 source를 담는 prop
+        contentContainerStyle={{ paddingTop: statusBarHeight }}
         keyExtractor={(_, index) => `column-${index}`}
         numColumns='7' // 한줄에 몇개
         renderItem={renderItem} // renderItem: data로 받은 소스들 각각의 item들을 render 시켜주는 콜백함수
@@ -141,7 +156,7 @@ export default function App() {
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
