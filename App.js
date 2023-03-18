@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { FlatList, StyleSheet, Text, View, Image, KeyboardAvoidingView, Pressable, Keyboard } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { FlatList, StyleSheet, Text, View, Image, KeyboardAvoidingView, Pressable, Keyboard, Alert } from 'react-native';
 import dayjs from 'dayjs';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
@@ -30,9 +30,16 @@ export default function App() {
     todoList, 
     input,
     setInput,
+    toggleTodo,
+    removeTodo,
+    addTodo,
+    resetInput,
   } = useTodoList(selectedDate)
   
   const columns = getCalendarColumns(selectedDate); // 현재시각을 기준으로 캘린더에 담긴 컬럼들을 가져옴
+
+  const flatListRef = useRef(null);
+
 
   const onPressLeftArrow = subtract1Month
   const onPressHeaderDate = showDatePicker
@@ -64,9 +71,24 @@ export default function App() {
   
   const renderItem = ({item: todo}) => {
     const isSuccess = todo.isSuccess;
+    const onPress = () => toggleTodo(todo.id);
+    const onLongPress = () => {
+      Alert.alert('삭제하시겠어요?', '', [
+        {
+          style: 'cancel',
+          text: '아니오',
+        },
+        {
+          text: '네',
+          onPress: () => removeTodo(todo.id),
+        }
+      ])
+    }
 
     return (
-      <View 
+      <Pressable 
+        onPress={onPress}
+        onLongPress={onLongPress}
         style={{ 
           flexDirection: 'row',
           width: ITEM_WIDTH, 
@@ -83,12 +105,32 @@ export default function App() {
           name='ios-checkmark' 
           sizee={17}
           color={isSuccess ? '#595959' : '#bfbfbf'}/>
-      </View>
+      </Pressable>
     )
   }
 
-  const onPressAdd = () => {
+  /* 스크롤 맨 아래로 */
+  const scrollToEnd = () => {
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd();
+    }, 200)
+  }
 
+  /* + 버튼 누르면 투두 추가 */
+  const onPressAdd = () => {
+    addTodo();
+    resetInput();
+    scrollToEnd();
+  }
+
+  /* 키보드의 전송버튼을 눌러도 투두 추가 */
+  const onSubmitEditing = () => {
+    addTodo();
+    resetInput();
+  }
+
+  const onFocus = () => {
+    scrollToEnd();
   }
 
   useEffect(() => {
@@ -100,7 +142,7 @@ export default function App() {
   // useEffect(() => {
   //   console.log('selectedDate값 변경:', dayjs(selectedDate). format('YYYY.MM.DD'));
   // }, [selectedDate])
-  
+
 /* Pressable = TouchableOpacity activeOpacity={1} */
   return (
     <Pressable 
@@ -122,10 +164,12 @@ export default function App() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <>
           <FlatList
+            ref={flatListRef}
             data={todoList}
-            contentContainerStyle={{ paddingTop: statusBarHeight }}
+            contentContainerStyle={{ paddingTop: statusBarHeight + 30 }}
             ListHeaderComponent={ListHeaderComponent} 
             renderItem={renderItem}
+            showsVerticalScrollIndicator={false} // 스크롤바 안보이게
           />
 
           <AddTodoInput 
@@ -133,6 +177,8 @@ export default function App() {
             onChangeText={setInput}
             placeholder={`${dayjs(selectedDate).format('M.D')}에 추가할 투두`}
             onPressAdd={onPressAdd}
+            onSubmitEditing={onSubmitEditing}
+            onFocus={onFocus}
           />
         </>
       </KeyboardAvoidingView>

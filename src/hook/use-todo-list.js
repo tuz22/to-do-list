@@ -50,6 +50,9 @@ export const useTodoList = (selectedDate) => {
     setTodoList(newTodoList)
   }
 
+  /* 투두 추가 후 input박스 리셋 */
+  const resetInput = () => setInput('');
+
   /* 투두 성공/성공x */
   const toggleTodo = (todoId) => {
     const newTodoList = todoList.map(todo => {
@@ -68,5 +71,6 @@ export const useTodoList = (selectedDate) => {
     toggleTodo,
     input,
     setInput,
+    resetInput,
   }
 }
