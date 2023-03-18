@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const defaultTodoList = [
   /* {
@@ -22,10 +23,16 @@ const defaultTodoList = [
   }, */
 ]
 
+const TODO_LIST_KEY = 'TODO_LIST_KEY';
 
 export const useTodoList = (selectedDate) => {
   const [todoList, setTodoList] = useState(defaultTodoList)
   const [input, setInput] = useState("") // 투두 입력란
+
+  const saveTodoList = (newTodoList) => {
+    setTodoList(newTodoList);
+    AsyncStorage.setItem(TODO_LIST_KEY, JSON.stringify(newTodoList));
+  }
 
   /* 투두 추가 */
   const addTodo = () => {
@@ -41,13 +48,14 @@ export const useTodoList = (selectedDate) => {
         isSuccess: false,
       }
     ]
-    setTodoList(newTodoList)
+    saveTodoList(newTodoList);
+    
   }
 
   /* 투두 삭제 */
   const removeTodo = (todoId) => {
     const newTodoList = todoList.filter(todo => todo.id !== todoId); // 삭제하려는 투두의 id만 빼고 나머지만 새 투두리스트에 넣음
-    setTodoList(newTodoList)
+    saveTodoList(newTodoList);
   }
 
   /* 투두 추가 후 input박스 리셋 */
@@ -62,7 +70,7 @@ export const useTodoList = (selectedDate) => {
         isSuccess: !todo.isSuccess,
       }
     });
-    setTodoList(newTodoList);
+    saveTodoList(newTodoList);
   }
 
   /* 날짜별 투두 필터 */
@@ -70,6 +78,19 @@ export const useTodoList = (selectedDate) => {
     const isSameDate = dayjs(todo.date).isSame(selectedDate, 'date');
     return isSameDate;
   })
+
+  useEffect(() => {
+    init();
+  }, []);
+  const init = async () => {
+    const result = await AsyncStorage.getItem(TODO_LIST_KEY);
+    console.log('result', typeof result, result);
+    if (result) {
+      const newTodoList = JSON.parse(result);
+      console.log('newTodoList', typeof newTodoList, newTodoList)
+      setTodoList(newTodoList)
+    }
+  }
 
   return {
     todoList,
