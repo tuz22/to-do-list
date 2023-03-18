@@ -27,7 +27,7 @@ export default function App() {
   } = useCalendar(now);
 
   const {
-    todoList, 
+    filteredTodoList, // 필터된 todoList 사용해야함
     input,
     setInput,
     toggleTodo,
@@ -165,7 +165,7 @@ export default function App() {
         <>
           <FlatList
             ref={flatListRef}
-            data={todoList}
+            data={filteredTodoList}
             contentContainerStyle={{ paddingTop: statusBarHeight + 30 }}
             ListHeaderComponent={ListHeaderComponent} 
             renderItem={renderItem}

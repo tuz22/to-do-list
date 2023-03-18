@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { useState } from 'react'
 
 const defaultTodoList = [
-  {
+  /* {
     id: 1,
     content: '운동하기',
     date: dayjs(),
@@ -19,7 +19,7 @@ const defaultTodoList = [
     content: '공부하기',
     date: dayjs(),
     isSuccess: true,
-  },
+  }, */
 ]
 
 
@@ -64,8 +64,15 @@ export const useTodoList = (selectedDate) => {
     });
     setTodoList(newTodoList);
   }
+
+  /* 날짜별 투두 필터 */
+  const filteredTodoList = todoList.filter(todo => {
+    const isSameDate = dayjs(todo.date).isSame(selectedDate, 'date');
+    return isSameDate;
+  })
+
   return {
-    todoList,
+    filteredTodoList,
     addTodo,
     removeTodo,
     toggleTodo,
