@@ -38,7 +38,7 @@ export const getCalendarColumns = (now) => {
     const date = dayjs(start).add(i, "day"); // 달의 첫날부터 1일씩 더해서
     columns.push(date); // 컬럼에 추가하기
   }
-  console.log('columns-3월', columns)
+  // console.log('columns-3월', columns)
 
   /* fillEmptyColumns: 달력에서 빈칸이 되는부분을 채워줌(첫날 이전의 공백, 마지막날 이후의 공백) */
   const filledColumns = fillEmptyColumns(columns, start, end);

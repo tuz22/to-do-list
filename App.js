@@ -1,15 +1,16 @@
 import dayjs from 'dayjs';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Margin from './src/Margin';
 import { runPracticeDayjs } from './src/practive-dayjs';
 import { getCalendarColumns, getDayText, getDayColor } from './src/util';
-import { SimpleLineIcons } from '@expo/vector-icons'; 
+import { SimpleLineIcons } from '@expo/vector-icons';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const columnSize = 35;
 
-const Column = ({text, color, opacity, disabled, onPress}) => {
+const Column = ({text, color, opacity, disabled, onPress, isSelected}) => {
   return(
     <TouchableOpacity 
       disabled={disabled} // 요일은 터치되면 안되니까
@@ -18,7 +19,9 @@ const Column = ({text, color, opacity, disabled, onPress}) => {
         width: columnSize, 
         height: columnSize, 
         justifyContent: 'center', 
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: isSelected ? '#c2c2c2' : 'transparent',
+        borderRadius: columnSize / 2,
       }}
     >
       <Text style={{ color, opacity }}>{text}</Text>
@@ -36,22 +39,48 @@ const ArrowButton = ({onPress, iconName}) => {
 
 export default function App() {
   const now = dayjs(); // 현재시각
-  const columns = getCalendarColumns(now); // 현재시각을 기준으로 캘린더에 담긴 컬럼들을 가져옴
+  const [selectedDate, setSelectedDate] = useState(now);
+  
+  const columns = getCalendarColumns(selectedDate); // 현재시각을 기준으로 캘린더에 담긴 컬럼들을 가져옴
+
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date) => {
+    setSelectedDate(dayjs(date)); // 밖에서 클릭했을 때랑 마찬가지로 모달에서도 클릭한 날짜가 선택되게
+    hideDatePicker();
+  };
+
+  const onPressLeftArrow = () => {
+    const newSelectedDate = dayjs(selectedDate).subtract(1, 'month');
+    setSelectedDate(newSelectedDate)
+  }
+  const onPressRightArrow = () => {
+    const newSelectedDate = dayjs(selectedDate).add(1, 'month');
+    setSelectedDate(newSelectedDate)
+  }
 
   const ListHeaderComponent = () => {
-    const currentDateText = dayjs(now).format('YYYY.MM.DD.');
+    const currentDateText = dayjs(selectedDate).format('YYYY.MM.DD.');
 
     return (
       <View>
         {/* YYYY.MM.DD */}
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-          <ArrowButton iconName='arrow-left' onPress={() => {}} />
+          <ArrowButton iconName='arrow-left' onPress={onPressLeftArrow} />
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={showDatePicker}>
             <Text style={{ fontSize: 20, color: '#404040' }}>{currentDateText}</Text>
           </TouchableOpacity>
 
-          <ArrowButton iconName='arrow-right' onPress={() => {}} />
+          <ArrowButton iconName='arrow-right' onPress={onPressRightArrow} />
         </View>
         
         {/* 요일 */}
@@ -79,17 +108,31 @@ export default function App() {
     const dateText = dayjs(date).get('date');
     const day = dayjs(date).get('day');
     const color = getDayColor(day)
-    const isCurrentMonth = dayjs(date).isSame(now, 'month'); // item으로 오는 date가 now의 month와 같으면 숫자 진하게, 아니면 연하게
+    const isCurrentMonth = dayjs(date).isSame(selectedDate, 'month'); // item으로 오는 date가 now의 month와 같으면 숫자 진하게, 아니면 연하게
+    const onPress = () => {
+      setSelectedDate(date);
+    }
+    const isSelected = dayjs(date).isSame(selectedDate, 'date');
     return (
-      <Column text={dateText} color={color} opacity={isCurrentMonth ? 1 : 0.4} />
+      <Column 
+        text={dateText} 
+        color={color} 
+        opacity={isCurrentMonth ? 1 : 0.4} 
+        onPress={onPress} 
+        isSelected={isSelected}
+      />
     )
   }
 
   useEffect(() => {
     runPracticeDayjs();
 
-    console.log('columns', columns);
+    // console.log('columns', columns);
   }, [])
+
+  useEffect(() => {
+    console.log('selectedDate값 변경:', dayjs(selectedDate). format('YYYY.MM.DD'));
+  }, [selectedDate])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,6 +142,12 @@ export default function App() {
         numColumns='7' // 한줄에 몇개
         renderItem={renderItem} // renderItem: data로 받은 소스들 각각의 item들을 render 시켜주는 콜백함수
         ListHeaderComponent={ListHeaderComponent}
+      />
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
       />
     </SafeAreaView>
   );
