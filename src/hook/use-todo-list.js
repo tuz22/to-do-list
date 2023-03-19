@@ -82,6 +82,7 @@ export const useTodoList = (selectedDate) => {
   useEffect(() => {
     init();
   }, []);
+  
   const init = async () => {
     const result = await AsyncStorage.getItem(TODO_LIST_KEY);
     console.log('result', typeof result, result);

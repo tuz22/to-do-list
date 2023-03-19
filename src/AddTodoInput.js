@@ -1,7 +1,6 @@
 import React from 'react';
-import { TextInput, TouchableOpacity, View, Text } from 'react-native';
-import { getBottomSpace } from 'react-native-iphone-x-helper';
-import { bottomSpace, ITEM_WIDTH } from './util';
+import { TextInput, TouchableOpacity, View } from 'react-native';
+import { ITEM_WIDTH } from './util';
 import { AntDesign } from '@expo/vector-icons';
 
 export default ({

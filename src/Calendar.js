@@ -118,7 +118,7 @@ export default ({
       data={columns} // data: 만들고자 하는 리스트의 source를 담는 prop
       scrollEnabled={false}
       keyExtractor={(_, index) => `column-${index}`}
-      numColumns='7' // 한줄에 몇개
+      numColumns={7} // 한줄에 몇개
       renderItem={renderItem} // renderItem: data로 받은 소스들 각각의 item들을 render 시켜주는 콜백함수
       ListHeaderComponent={ListHeaderComponent}
     />

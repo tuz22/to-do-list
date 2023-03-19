@@ -2,11 +2,10 @@ import { useEffect, useRef } from 'react';
 import { FlatList, StyleSheet, Text, View, Image, KeyboardAvoidingView, Pressable, Keyboard, Alert } from 'react-native';
 import dayjs from 'dayjs';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 import { Ionicons } from '@expo/vector-icons'; 
 
 import { runPracticeDayjs } from './src/practive-dayjs';
-import { getCalendarColumns, getDayText, getDayColor, statusBarHeight, ITEM_WIDTH, bottomSpace } from './src/util';
+import { getCalendarColumns, statusBarHeight, ITEM_WIDTH, bottomSpace } from './src/util';
 import { useCalendar } from './src/hook/use-calendar';
 import { useTodoList } from './src/hook/use-todo-list';
 import Calendar from './src/Calendar';
@@ -166,7 +165,7 @@ export default function App() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <>
           <FlatList
-            ref={flatListRef}
+            // ref={flatListRef}
             data={filteredTodoList}
             contentContainerStyle={{ paddingTop: statusBarHeight + 30 }}
             ListHeaderComponent={ListHeaderComponent} 
